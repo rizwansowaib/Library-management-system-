@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Management Dashboard | Library Core</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #eff6ff;
+            --bg-canvas: #f8fafc;
+            --surface-card: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-line: #e2e8f0;
+            --accent-success: #16a34a;
+            --accent-danger: #dc2626;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .app-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid var(--border-line);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 { margin: 0; color: var(--primary); font-size: 2.2rem; }
+        header p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1rem; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .card-panel {
+            background: var(--surface-card);
+            border: 1px solid var(--border-line);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            height: fit-content;
+        }
+
+        .card-panel h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+        }
+
+        .input-group { margin-bottom: 1.25rem; }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            color: #475569;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-line);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        .btn-action {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-action:hover { background: #1d4ed8; }
+
+        .search-container { margin-bottom: 1.5rem; }
+        .search-container input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border-line);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td { padding: 1rem; border-bottom: 1px solid var(--border-line); }
+        th { background: #f1f5f9; color: #475569; font-weight: 600; font-size: 0.85rem; }
+
+        .status-pill {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-in { background: #dcfce7; color: var(--accent-success); }
+        .status-out { background: #fee2e2; color: var(--accent-danger); }
+
+        .table-action {
+            background: none;
+            border: none;
+            padding: 0.4rem 0.6rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border-radius: 4px;
+        }
+        .btn-status { color: var(--primary); margin-right: 0.5rem; }
+        .btn-status:hover { background: var(--primary-light); }
+        .btn-remove { color: var(--accent-danger); }
+        .btn-remove:hover { background: #fef2f2; }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <header>
+        <h1>Library Asset Management System</h1>
+        <p>Operational control panel for managing real-time inventory tracking and catalogs.</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="card-panel">
+            <h2>Add Catalog Resource</h2>
+            <form id="assetForm">
+                <div class="input-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" required placeholder="e.g., Structure & Interpretation of Computer Programs">
+                </div>
+                <div class="input-group">
+                    <label for="author">Author</label>
+                    <input type="text" id="author" required placeholder="e.g., Harold Abelson">
+                </div>
+                <div class="input-group">
+                    <label for="isbn">ISBN Code</label>
+                    <input type="text" id="isbn" required placeholder="e.g., 9780262510875">
+                </div>
+                <div class="input-group">
+                    <label for="category">Genre Classification</label>
+                    <select id="category">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Fiction">Fiction</option>
+                        <option value="Historical Biography">Historical Biography</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-action">Commit Entry</button>
+            </form>
+        </div>
+
+        <div class="card-panel">
+            <h2>Live Catalog Grid Database</h2>
+            <div class="search-container">
+                <input type="text" id="filterBox" placeholder="Fuzzy search across titles, authors, or unique ISBN profiles...">
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Book / Author</th>
+                            <th>ISBN Reference</th>
+                            <th>Category</th>
+                            <th>Current Tracking</th>
+                            <th>Database Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryManifest">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // State Persistence Pipeline Architecture
+    let dataset = JSON.parse(localStorage.getItem('core_library_db')) || [
+        { title: "Design Patterns", author: "Erich Gamma", isbn: "9780201633610", category: "Computer Science", status: "Available" },
+        { title: "The Mythical Man-Month", author: "Fred Brooks", isbn: "9780201835953", category: "Computer Science", status: "Borrowed" }
+    ];
+
+    const formElement = document.getElementById('assetForm');
+    const displayGrid = document.getElementById('inventoryManifest');
+    const UIFilterInput = document.getElementById('filterBox');
+
+    // Rendering Engine Execution
+    function drawCatalogScreen(activeList = dataset) {
+        displayGrid.innerHTML = '';
+
+        if(activeList.length === 0) {
+            displayGrid.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">No assets found matching parameters.</td></tr>`;
+            return;
+        }
+
+        activeList.forEach((book) => {
+            // Locate target source indexing key references globally mapping uniquely against structural ISBN values
+            const globalIndex = dataset.findIndex(element => element.isbn === book.isbn);
+            const lineItem = document.createElement('tr');
+            const stateStyle = book.status === 'Available' ? 'status-in' : 'status-out';
+
+            lineItem.innerHTML = `
+                <td>
+                    <div style="font-weight: 600; color: var(--text-dark);">${book.title}</div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">${book.author}</div>
+                </td>
+                <td><code>${book.isbn}</code></td>
+                <td><span style="font-size: 0.9rem;">${book.category}</span></td>
+                <td><span class="status-pill ${stateStyle}">${book.status}</span></td>
+                <td>
+                    <button class="table-action btn-status" onclick="mutateStatus(${globalIndex})">Toggle State</button>
+                    <button class="table-action btn-remove" onclick="purgeAsset(${globalIndex})">Purge</button>
+                </td>
+            `;
+            displayGrid.appendChild(lineItem);
+        });
+    }
+
+    function syncStateWithMemory() {
+        localStorage.setItem('core_library_db', JSON.stringify(dataset));
+    }
+
+    // Capture Resource Registrations
+    formElement.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const inputIsbnVal = document.getElementById('isbn').value.trim();
+
+        if (dataset.some(entry => entry.isbn === inputIsbnVal)) {
+            alert("Structural Validation Failed: Resource entry mapping to identical ISBN constraints already tracked.");
+            return;
+        }
+
+        const structuralRecord = {
+            title: document.getElementById('title').value.trim(),
+            author: document.getElementById('author').value.trim(),
+            isbn: inputIsbnVal,
+            category: document.getElementById('category').value,
+            status: "Available"
+        };
+
+        dataset.push(structuralRecord);
+        syncStateWithMemory();
+        runActiveUIPipeline();
+        formElement.reset();
+    });
+
+    window.mutateStatus = function(targetKey) {
+        dataset[targetKey].status = dataset[targetKey].status === "Available" ? "Borrowed" : "Available";
+        syncStateWithMemory();
+        runActiveUIPipeline();
+    };
+
+    window.purgeAsset = function(targetKey) {
+        if (confirm(`Authorize structural database deletion protocols for target record: "${dataset[targetKey].title}"?`)) {
+            dataset.splice(targetKey, 1);
+            syncStateWithMemory();
+            runActiveUIPipeline();
+        }
+    };
+
+    function runActiveUIPipeline() {
+        const structuralQuery = UIFilterInput.value.toLowerCase().trim();
+        const filteredDataStream = dataset.filter(book => 
+            book.title.toLowerCase().includes(structuralQuery) ||
+            book.author.toLowerCase().includes(structuralQuery) ||
+            book.isbn.includes(structuralQuery)
+        );
+        drawCatalogScreen(filteredDataStream);
+    }
+
+    UIFilterInput.addEventListener('input', runActiveUIPipeline);
+
+    // Bootstrap Initialization 
+    drawCatalogScreen();
+</script>
+</body>
+</html>
