@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+            --success: #16a34a;
+            --danger: #dc2626;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h1 { margin: 0; color: var(--primary); }
+        p.subtitle { color: #64748b; margin: 5px 0 0 0; }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid var(--border);
+        }
+
+        .card h2 { margin-top: 0; font-size: 1.25rem; color: #334155; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: 2px solid var(--primary);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th { background-color: #f1f5f9; font-weight: 600; }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-available { background-color: #dcfce7; color: var(--success); }
+        .status-borrowed { background-color: #fee2e2; color: var(--danger); }
+
+        .actions-btn {
+            background: none;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            width: auto;
+            display: inline-block;
+        }
+        .btn-toggle { color: var(--primary); margin-right: 10px;}
+        .btn-delete { color: var(--danger); }
+        .actions-btn:hover { background-color: #f1f5f9; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Library Management System</h1>
+        <p class="subtitle">Project Developer: Nisha Paudel</p>
+    </header>
+
+    <div class="main-content">
+        <div class="card">
+            <h2>Add New Book</h2>
+            <form id="bookForm">
+                <div class="form-group">
+                    <label for="bookTitle">Book Title</label>
+                    <input type="text" id="bookTitle" required placeholder="e.g., The Great Gatsby">
+                </div>
+                <div class="form-group">
+                    <label for="bookAuthor">Author</label>
+                    <input type="text" id="bookAuthor" required placeholder="e.g., F. Scott Fitzgerald">
+                </div>
+                <div class="form-group">
+                    <label for="bookISBN">ISBN Number</label>
+                    <input type="text" id="bookISBN" required placeholder="e.g., 9780743273565">
+                </div>
+                <div class="form-group">
+                    <label for="bookCategory">Category</label>
+                    <select id="bookCategory">
+                        <option value="Fiction">Fiction</option>
+                        <option value="Non-Fiction">Non-Fiction</option>
+                        <option value="Science">Science</option>
+                        <option value="History">History</option>
+                        <option value="Biography">Biography</option>
+                    </select>
+                </div>
+                <button type="submit">Add Book to Library</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Library Inventory</h2>
+            <div class="form-group search-box">
+                <input type="text" id="searchBar" placeholder="Search by title, author, or ISBN...">
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>ISBN</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Application State Management
+    let books = JSON.parse(localStorage.getItem('library_books')) || [
+        {title: "To Kill a Mockingbird", author: "Harper Lee", isbn: "9780446310789", category: "Fiction", status: "Available"},
+        {title: "A Brief History of Time", author: "Stephen Hawking", isbn: "9780553380163", category: "Science", status: "Borrowed"}
+    ];
+
+    const bookForm = document.getElementById('bookForm');
+    const bookTableBody = document.getElementById('bookTableBody');
+    const searchBar = document.getElementById('searchBar');
+
+    // Render Books inside table
+    function renderBooks(booksToDisplay = books) {
+        bookTableBody.innerHTML = '';
+        
+        if(booksToDisplay.length === 0) {
+            bookTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">No books found in database.</td></tr>`;
+            return;
+        }
+
+        booksToDisplay.forEach((book, index) => {
+            const row = document.createElement('tr');
+            const statusClass = book.status === 'Available' ? 'status-available' : 'status-borrowed';
+            
+            row.innerHTML = `
+                <td><strong>${book.title}</strong></td>
+                <td>${book.author}</td>
+                <td><code>${book.isbn}</code></td>
+                <td>${book.category}</td>
+                <td><span class="status-badge ${statusClass}">${book.status}</span></td>
+                <td>
+                    <button class="actions-btn btn-toggle" onclick="toggleStatus(${index})">Status 🔄</button>
+                    <button class="actions-btn btn-delete" onclick="deleteBook(${index})">Delete 🗑️</button>
+                </td>
+            `;
+            bookTableBody.appendChild(row);
+        });
+    }
+
+    // Save data to browser memory
+    function saveToLocalStorage() {
+        localStorage.setItem('library_books', JSON.stringify(books));
+    }
+
+    // Add Book Submission
+    bookForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const newBook = {
+            title: document.getElementById('bookTitle').value,
+            author: document.getElementById('bookAuthor').value,
+            isbn: document.getElementById('bookISBN').value,
+            category: document.getElementById('bookCategory').value,
+            status: 'Available'
